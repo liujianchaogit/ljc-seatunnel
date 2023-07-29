@@ -18,6 +18,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <seatunnel-framework.version>2.3.2</seatunnel-framework.version>
     </properties>
 
     <dependencies>
@@ -40,6 +41,24 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.5.3.1</version>
+        </dependency>
+
+        <!-- seatunnel start -->
+        <dependency>
+            <groupId>org.apache.seatunnel</groupId>
+            <artifactId>seatunnel-common</artifactId>
+            <version>${seatunnel-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.seatunnel</groupId>
+            <artifactId>seatunnel-engine-client</artifactId>
+            <version>${seatunnel-framework.version}</version>
+        </dependency>
+        <!-- seatunnel end -->
     </dependencies>
 
     <build>
