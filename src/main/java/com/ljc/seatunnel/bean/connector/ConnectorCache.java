@@ -1,17 +1,17 @@
 package com.ljc.seatunnel.bean.connector;
 
+import com.ljc.seatunnel.common.SeatunnelErrorEnum;
+import com.ljc.seatunnel.common.SeatunnelException;
+import com.ljc.seatunnel.domain.response.connector.ConnectorFeature;
+import com.ljc.seatunnel.domain.response.connector.ConnectorInfo;
+import com.ljc.seatunnel.dynamicforms.FormStructure;
+import com.ljc.seatunnel.utils.PluginDiscoveryUtil;
 import lombok.NonNull;
 import org.apache.seatunnel.api.configuration.util.OptionRule;
-import org.apache.seatunnel.app.domain.response.connector.ConnectorFeature;
-import org.apache.seatunnel.app.domain.response.connector.ConnectorInfo;
-import org.apache.seatunnel.app.dynamicforms.FormStructure;
-import org.apache.seatunnel.app.thirdparty.framework.PluginDiscoveryUtil;
 import org.apache.seatunnel.common.config.Common;
 import org.apache.seatunnel.common.config.DeployMode;
 import org.apache.seatunnel.common.constants.PluginType;
 import org.apache.seatunnel.plugin.discovery.PluginIdentifier;
-import org.apache.seatunnel.server.common.SeatunnelErrorEnum;
-import org.apache.seatunnel.server.common.SeatunnelException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

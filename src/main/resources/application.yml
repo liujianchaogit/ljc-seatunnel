@@ -2,8 +2,13 @@ server:
   port: 8801
 
 spring:
+  application:
+    name: ljc-seatunnel
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc://sffewf
-    username: root
-    password: root
+    url: jdbc:mysql://192.168.53.138:3306/sp?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&allowPublicKeyRetrieval=true
+    username: inlong
+    password: inlong
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+

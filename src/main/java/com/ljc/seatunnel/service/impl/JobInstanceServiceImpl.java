@@ -6,7 +6,8 @@ import com.ljc.seatunnel.bean.connector.ConnectorCache;
 import com.ljc.seatunnel.common.CodeGenerateUtils;
 import com.ljc.seatunnel.common.SeatunnelErrorEnum;
 import com.ljc.seatunnel.common.SeatunnelException;
-import com.ljc.seatunnel.dal.dao.IJobInstanceDao;
+import com.ljc.seatunnel.config.ConnectorDataSourceMapperConfig;
+import com.ljc.seatunnel.dal.dao.*;
 import com.ljc.seatunnel.dal.entity.*;
 import com.ljc.seatunnel.domain.executor.JobExecutorRes;
 import com.ljc.seatunnel.domain.request.connector.BusinessMode;
@@ -18,7 +19,11 @@ import com.ljc.seatunnel.domain.request.job.TableSchemaReq;
 import com.ljc.seatunnel.domain.request.job.transform.Transform;
 import com.ljc.seatunnel.domain.request.job.transform.TransformOptions;
 import com.ljc.seatunnel.domain.response.datasource.VirtualTableDetailRes;
+import com.ljc.seatunnel.service.IDatasourceService;
 import com.ljc.seatunnel.service.IJobInstanceService;
+import com.ljc.seatunnel.service.IVirtualTableService;
+import com.ljc.seatunnel.thirdparty.datasource.DataSourceConfigSwitcherUtils;
+import com.ljc.seatunnel.thirdparty.transform.TransformConfigSwitcherUtils;
 import com.ljc.seatunnel.utils.SeaTunnelConfigUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +45,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.ljc.seatunnel.utils.TaskOptionUtils.getTransformOption;
 
 @Slf4j
 @Service
@@ -50,6 +56,20 @@ public class JobInstanceServiceImpl implements IJobInstanceService {
     private IJobInstanceDao jobInstanceDao;
     @Autowired
     private ConnectorCache connectorCache;
+    @Autowired
+    private IJobDefinitionDao jobDefinitionDao;
+    @Autowired
+    private IJobVersionDao jobVersionDao;
+    @Autowired
+    private IDatasourceService datasourceService;
+    @Autowired
+    private IJobLineDao jobLineDao;
+    @Autowired
+    private IJobTaskDao jobTaskDao;
+    @Autowired
+    private IVirtualTableService virtualTableService;
+    @Autowired
+    private ConnectorDataSourceMapperConfig dataSourceMapperConfig;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -321,7 +341,8 @@ public class JobInstanceServiceImpl implements IJobInstanceService {
                     OBJECT_MAPPER.readValue(
                             outputSchemas.get(0),
                             new com.fasterxml.jackson.core.type.TypeReference<
-                                    List<DatabaseTableSchemaReq>>() {});
+                                    List<DatabaseTableSchemaReq>>() {
+                            });
             return databaseTableSchemaReqs.stream()
                     .map(
                             databaseTableSchemaReq -> {
@@ -514,6 +535,15 @@ public class JobInstanceServiceImpl implements IJobInstanceService {
             PluginType pluginType, String connectorType, String config, OptionRule optionRule) {
         return parseConfigWithOptionRule(
                 pluginType, connectorType, ConfigFactory.parseString(config), optionRule);
+    }
+
+    private Config parseConfigWithOptionRule(
+            PluginType pluginType,
+            String connectorType,
+            Map<String, String> config,
+            OptionRule optionRule) {
+        return parseConfigWithOptionRule(
+                pluginType, connectorType, ConfigFactory.parseMap(config), optionRule);
     }
 
     private Config parseConfigWithOptionRule(
