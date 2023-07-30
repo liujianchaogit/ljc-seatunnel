@@ -1,2 +1,9 @@
 server:
   port: 8801
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc://
+    username: root
+    password: root
