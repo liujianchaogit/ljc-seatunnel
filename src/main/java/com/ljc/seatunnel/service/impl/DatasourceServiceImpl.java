@@ -2,6 +2,7 @@ package com.ljc.seatunnel.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ljc.seatunnel.common.CodeGenerateUtils;
 import com.ljc.seatunnel.common.SeatunnelErrorEnum;
 import com.ljc.seatunnel.common.SeatunnelException;
 import com.ljc.seatunnel.config.ConnectorDataSourceMapperConfig;
@@ -22,7 +23,9 @@ import com.ljc.seatunnel.service.ITableSchemaService;
 import com.ljc.seatunnel.thirdparty.datasource.DataSourceClientFactory;
 import com.ljc.seatunnel.utils.SeaTunnelOptionRuleWrapper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.seatunnel.api.configuration.util.OptionRule;
 import org.apache.seatunnel.common.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,68 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
     protected static final String DEFAULT_DATASOURCE_PLUGIN_VERSION = "1.0.0";
 
+
+    @Override
+    public String createDatasource(Integer userId, String datasourceName, String pluginName, String pluginVersion, String description, Map<String, String> datasourceConfig) throws CodeGenerateUtils.CodeGenerateException {
+        long uuid = CodeGenerateUtils.getInstance().genCode();
+        boolean unique = datasourceDao.checkDatasourceNameUnique(datasourceName, 0L);
+        if (!unique) {
+            throw new SeatunnelException(
+                    SeatunnelErrorEnum.DATASOURCE_NAME_ALREADY_EXISTS, datasourceName);
+        }
+        if (MapUtils.isEmpty(datasourceConfig)) {
+            throw new SeatunnelException(
+                    SeatunnelErrorEnum.DATASOURCE_PRAM_NOT_ALLOWED_NULL, "datasourceConfig");
+        }
+        String datasourceConfigStr = JsonUtils.toJsonString(datasourceConfig);
+        Datasource datasource =
+                Datasource.builder()
+                        .id(uuid)
+                        .createUserId(userId)
+                        .updateUserId(userId)
+                        .datasourceName(datasourceName)
+                        .pluginName(pluginName)
+                        .pluginVersion(pluginVersion)
+                        .description(description)
+                        .datasourceConfig(datasourceConfigStr)
+                        .createTime(new Date())
+                        .updateTime(new Date())
+                        .build();
+        boolean success = datasourceDao.insertDatasource(datasource);
+        if (success) {
+            return String.valueOf(uuid);
+        }
+        throw new SeatunnelException(SeatunnelErrorEnum.DATASOURCE_CREATE_FAILED);
+    }
+
+    @Override
+    public boolean updateDatasource(Integer userId, Long datasourceId, String datasourceName, String description, Map<String, String> datasourceConfig) {
+        if (datasourceId == null) {
+            throw new SeatunnelException(
+                    SeatunnelErrorEnum.DATASOURCE_PRAM_NOT_ALLOWED_NULL, "datasourceId");
+        }
+        Datasource datasource = datasourceDao.selectDatasourceById(datasourceId);
+        if (datasource == null) {
+            throw new SeatunnelException(
+                    SeatunnelErrorEnum.DATASOURCE_NOT_FOUND, datasourceId.toString());
+        }
+        if (StringUtils.isNotBlank(datasourceName)) {
+            datasource.setDatasourceName(datasourceName);
+            boolean unique = datasourceDao.checkDatasourceNameUnique(datasourceName, datasourceId);
+            if (!unique) {
+                throw new SeatunnelException(
+                        SeatunnelErrorEnum.DATASOURCE_NAME_ALREADY_EXISTS, datasourceName);
+            }
+        }
+        datasource.setUpdateUserId(userId);
+        datasource.setUpdateTime(new Date());
+        datasource.setDescription(description);
+        if (MapUtils.isNotEmpty(datasourceConfig)) {
+            String configJson = JsonUtils.toJsonString(datasourceConfig);
+            datasource.setDatasourceConfig(configJson);
+        }
+        return datasourceDao.updateDatasourceById(datasource);
+    }
 
     @Override
     public boolean testDatasourceConnectionAble(Integer userId, String pluginName, String pluginVersion, Map<String, String> datasourceConfig) {

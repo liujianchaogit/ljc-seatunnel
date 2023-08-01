@@ -11,12 +11,12 @@ import java.util.Map;
 public class PulsarDataSourceChannel implements DataSourceChannel {
     @Override
     public OptionRule getDataSourceOptions(@NonNull String pluginName) {
-        return null;
+        return PulsarOptionRule.optionRule();
     }
 
     @Override
     public OptionRule getDatasourceMetadataFieldsByDataSourceName(@NonNull String pluginName) {
-        return null;
+        return PulsarOptionRule.metadataRule();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class PulsarDataSourceChannel implements DataSourceChannel {
 
     @Override
     public List<String> getDatabases(@NonNull String pluginName, @NonNull Map<String, String> requestParams) {
-        return null;
+        return DEFAULT_DATABASES;
     }
 
     @Override

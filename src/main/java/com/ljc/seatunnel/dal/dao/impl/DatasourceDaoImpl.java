@@ -18,6 +18,11 @@ public class DatasourceDaoImpl implements IDatasourceDao {
     private DatasourceMapper datasourceMapper;
 
     @Override
+    public boolean insertDatasource(Datasource datasource) {
+        return datasourceMapper.insert(datasource) > 0;
+    }
+
+    @Override
     public Datasource selectDatasourceById(Long id) {
         return datasourceMapper.selectById(id);
     }
@@ -26,6 +31,19 @@ public class DatasourceDaoImpl implements IDatasourceDao {
     public Datasource queryDatasourceByName(String name) {
         return datasourceMapper.selectOne(
                 new QueryWrapper<Datasource>().eq("datasource_name", name));
+    }
+
+    @Override
+    public boolean updateDatasourceById(Datasource datasource) {
+        return datasourceMapper.updateById(datasource) > 0;
+    }
+
+    @Override
+    public boolean checkDatasourceNameUnique(String dataSourceName, Long dataSourceId) {
+        QueryWrapper<Datasource> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("datasource_name", dataSourceName);
+        queryWrapper.ne("id", dataSourceId);
+        return datasourceMapper.selectList(queryWrapper).size() <= 0;
     }
 
     @Override
@@ -60,5 +78,10 @@ public class DatasourceDaoImpl implements IDatasourceDao {
         }
         return datasourceMapper.selectPage(page, datasourceQueryWrapper);
 
+    }
+
+    @Override
+    public List<Datasource> selectDatasourceByIds(List<Long> ids) {
+        return datasourceMapper.selectBatchIds(ids);
     }
 }

@@ -8,10 +8,12 @@ import com.ljc.seatunnel.domain.dto.datasource.DatabaseTableFields;
 import com.ljc.seatunnel.domain.dto.datasource.DatabaseTables;
 import com.ljc.seatunnel.domain.dto.datasource.TableInfo;
 import com.ljc.seatunnel.domain.request.datasource.DatasourceCheckReq;
+import com.ljc.seatunnel.domain.request.datasource.DatasourceReq;
 import com.ljc.seatunnel.domain.response.datasource.DatasourceDetailRes;
 import com.ljc.seatunnel.domain.response.datasource.DatasourceRes;
 import com.ljc.seatunnel.service.IDatasourceService;
 import com.ljc.seatunnel.utils.CartesianProductUtils;
+import com.ljc.seatunnel.utils.JSONUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,9 +29,25 @@ public class SeatunnelDatasourceController {
 
     @Autowired
     private IDatasourceService datasourceService;
+    private static final String DEFAULT_PLUGIN_VERSION = "1.0.0";
 //    private static final String WS_SOURCE = "WS";
 //    private static final List<String> wsSupportDatasources =
 //            PropertyUtils.getList("ws.support.datasources", ",");
+
+    @PostMapping("/create")
+    Result<String> createDatasource(
+            @RequestBody DatasourceReq req) {
+        String datasourceConfig = req.getDatasourceConfig();
+        Map<String, String> stringStringMap = JSONUtils.toMap(datasourceConfig);
+        return Result.success(
+                datasourceService.createDatasource(
+                        1,
+                        req.getDatasourceName(),
+                        req.getPluginName(),
+                        DEFAULT_PLUGIN_VERSION,
+                        req.getDescription(),
+                        stringStringMap));
+    }
 
     @PostMapping("/check/connect")
     Result<Boolean> testConnect(
@@ -40,8 +58,23 @@ public class SeatunnelDatasourceController {
                 datasourceService.testDatasourceConnectionAble(
                         1,
                         req.getPluginName(),
-                        "1.0.0",
+                        DEFAULT_PLUGIN_VERSION,
                         req.getDatasourceConfig()));
+    }
+
+    @PutMapping("/{id}")
+    Result<Boolean> updateDatasource(
+            @PathVariable("id") String id,
+            @RequestBody DatasourceReq req) {
+        Map<String, String> stringStringMap = JSONUtils.toMap(req.getDatasourceConfig());
+        Long datasourceId = Long.parseLong(id);
+        return Result.success(
+                datasourceService.updateDatasource(
+                        1,
+                        datasourceId,
+                        req.getDatasourceName(),
+                        req.getDescription(),
+                        stringStringMap));
     }
 
     @GetMapping("/{id}")

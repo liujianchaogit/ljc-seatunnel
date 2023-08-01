@@ -37,6 +37,10 @@ connector-datasource-mapper:
         - Kafka
         - Kafka-Kingbase
 
+    pulsar:
+      dataSources:
+        - Pulsar
+
     StarRocks:
       dataSources:
         - StarRocks
@@ -125,6 +129,12 @@ connector-datasource-mapper:
         - SPLIT_TABLE
 
     Kafka:
+      businessMode:
+        - DATA_INTEGRATION
+      sceneMode:
+        - SINGLE_TABLE
+
+    Pulsar:
       businessMode:
         - DATA_INTEGRATION
       sceneMode:

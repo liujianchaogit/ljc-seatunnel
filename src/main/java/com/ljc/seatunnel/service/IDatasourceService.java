@@ -1,5 +1,6 @@
 package com.ljc.seatunnel.service;
 
+import com.ljc.seatunnel.common.CodeGenerateUtils;
 import com.ljc.seatunnel.datasource.plugins.api.DataSourcePluginInfo;
 import com.ljc.seatunnel.datasource.plugins.model.TableField;
 import com.ljc.seatunnel.domain.PageInfo;
@@ -11,6 +12,22 @@ import java.util.List;
 import java.util.Map;
 
 public interface IDatasourceService {
+
+    String createDatasource(
+            Integer userId,
+            String datasourceName,
+            String pluginName,
+            String pluginVersion,
+            String description,
+            Map<String, String> datasourceConfig)
+            throws CodeGenerateUtils.CodeGenerateException;
+
+    boolean updateDatasource(
+            Integer userId,
+            Long datasourceId,
+            String datasourceName,
+            String description,
+            Map<String, String> datasourceConfig);
 
     boolean testDatasourceConnectionAble(
             Integer userId,

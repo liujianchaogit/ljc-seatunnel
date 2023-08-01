@@ -8,9 +8,15 @@ import java.util.List;
 
 public interface IDatasourceDao {
 
+    boolean insertDatasource(Datasource datasource);
+
     Datasource selectDatasourceById(Long id);
 
     Datasource queryDatasourceByName(String name);
+
+    boolean updateDatasourceById(Datasource datasource);
+
+    boolean checkDatasourceNameUnique(String dataSourceName, Long dataSourceId);
 
     List<Datasource> selectDatasourceByPluginName(String pluginName, String pluginVersion);
 
@@ -19,4 +25,6 @@ public interface IDatasourceDao {
             List<Long> availableDatasourceIds,
             String searchVal,
             String pluginName);
+
+    List<Datasource> selectDatasourceByIds(List<Long> ids);
 }
