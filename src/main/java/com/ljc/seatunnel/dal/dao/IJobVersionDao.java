@@ -6,4 +6,5 @@ public interface IJobVersionDao {
 
     JobVersion getLatestVersion(long jobId);
 
+    JobVersion getVersionById(long jobVersionId);
 }

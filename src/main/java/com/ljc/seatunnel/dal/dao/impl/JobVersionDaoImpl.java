@@ -21,4 +21,9 @@ public class JobVersionDaoImpl implements IJobVersionDao {
         queryMap.put("job_id", jobId);
         return jobVersionMapper.selectByMap(queryMap).get(0);
     }
+
+    @Override
+    public JobVersion getVersionById(long jobVersionId) {
+        return jobVersionMapper.selectById(jobVersionId);
+    }
 }
