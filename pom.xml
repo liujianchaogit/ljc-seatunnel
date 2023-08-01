@@ -69,6 +69,16 @@
             <artifactId>connector-jdbc</artifactId>
             <version>${seatunnel-framework.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.seatunnel</groupId>
+            <artifactId>connector-kafka</artifactId>
+            <version>${seatunnel-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.seatunnel</groupId>
+            <artifactId>connector-pulsar</artifactId>
+            <version>${seatunnel-framework.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

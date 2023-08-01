@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequestMapping("/a")
+@RequestMapping("/seatunnel/api/v1/job/executor")
 @RestController
 public class JobExecutorController {
     @Autowired
     IJobExecutorService jobExecutorService;
 
-    @GetMapping("/e")
+    @GetMapping("/execute")
     public Result<Long> jobExecutor(@RequestParam("jobDefineId")
             Long jobDefineId) {
         return jobExecutorService.jobExecute(1, jobDefineId);
