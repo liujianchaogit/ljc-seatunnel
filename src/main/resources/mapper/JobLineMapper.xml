@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljc.seatunnel.dal.mapper.JobLineMapper">
+  <resultMap id="BaseResultMap" type="com.ljc.seatunnel.dal.entity.JobLine">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="version_id" jdbcType="BIGINT" property="versionId"/>
+    <result column="input_plugin_id" jdbcType="BIGINT" property="inputPluginId"/>
+    <result column="target_plugin_id" jdbcType="BIGINT" property="targetPluginId"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+  </resultMap>
+  <delete id="deleteLinesByVersionId">
+    delete from t_st_job_line where version_id = #{versionId}
+  </delete>
+
+  <insert id="insertBatchLines">
+    insert into t_st_job_line (id, version_id, input_plugin_id, target_plugin_id)
+    values
+    <foreach collection="lines" item="line" separator=",">
+      (#{line.id},
+      #{line.versionId},
+      #{line.inputPluginId},
+      #{line.targetPluginId})
+    </foreach>
+  </insert>
+</mapper>

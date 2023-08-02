@@ -114,7 +114,12 @@ public class TableSchemaServiceImpl implements ITableSchemaService {
         } else if (pluginName.startsWith("JDBC-")) {
             pluginName = pluginName.replace("JDBC-", "");
         }
-        DataTypeConvertor<?> convertor = factory.getDataTypeConvertor(pluginName);
+        DataTypeConvertor<?> convertor;
+        try {
+            convertor = factory.getDataTypeConvertor(pluginName);
+        } catch (Exception e) {
+            return;
+        }
         for (TableField field : tableFields) {
             try {
                 SeaTunnelDataType<?> dataType = convertor.toSeaTunnelType(field.getType());

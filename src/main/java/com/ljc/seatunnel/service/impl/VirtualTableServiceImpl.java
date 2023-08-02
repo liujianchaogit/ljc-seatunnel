@@ -21,6 +21,7 @@ import com.ljc.seatunnel.service.IVirtualTableService;
 import com.ljc.seatunnel.thirdparty.datasource.DataSourceClientFactory;
 import com.ljc.seatunnel.utils.SeaTunnelOptionRuleWrapper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.seatunnel.api.configuration.util.OptionRule;
 import org.apache.seatunnel.common.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,48 @@ public class VirtualTableServiceImpl implements IVirtualTableService {
             throw new SeatunnelException(SeatunnelErrorEnum.VIRTUAL_TABLE_CREATE_FAILED);
         }
         return String.valueOf(uuid);
+    }
+
+    @Override
+    public Boolean updateVirtualTable(Integer userId, String tableId, VirtualTableReq req) {
+        VirtualTable originalTable = virtualTableDao.selectVirtualTableById(Long.valueOf(tableId));
+        if (null == originalTable) {
+            throw new SeatunnelException(SeatunnelErrorEnum.VIRTUAL_TABLE_NOT_EXISTS);
+        }
+        if (StringUtils.isNotBlank(req.getTableName())) {
+            boolean isUnique =
+                    virtualTableDao.checkVirtualTableNameUnique(
+                            req.getTableName(), req.getDatabaseName(), Long.valueOf(tableId));
+            if (!isUnique) {
+                throw new SeatunnelException(
+                        SeatunnelErrorEnum.VIRTUAL_TABLE_ALREADY_EXISTS, req.getTableName());
+            }
+        }
+
+        VirtualTable virtualTable =
+                VirtualTable.builder()
+                        .id(Long.valueOf(tableId))
+                        .datasourceId(originalTable.getDatasourceId())
+                        .virtualDatabaseName(req.getDatabaseName())
+                        .virtualTableName(req.getTableName())
+                        .description(req.getDescription())
+                        .updateTime(new Date())
+                        .updateUserId(userId)
+                        .build();
+        if (CollectionUtils.isNotEmpty(req.getTableFields())) {
+            String fieldJson = convertTableFields(req.getTableFields());
+            virtualTable.setTableFields(fieldJson);
+        }
+
+        virtualTable.setVirtualTableConfig(JsonUtils.toJsonString(req.getDatabaseProperties()));
+
+        return virtualTableDao.updateVirtualTable(virtualTable);
+    }
+
+    @Override
+    public VirtualTableDetailRes queryVirtualTable(String tableId) {
+        VirtualTable virtualTable = virtualTableDao.selectVirtualTableById(Long.valueOf(tableId));
+        return buildVirtualTableDetailRes(virtualTable);
     }
 
     private String convertTableFields(List<VirtualTableFieldReq> tableFields) {

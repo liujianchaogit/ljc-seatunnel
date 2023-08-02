@@ -16,6 +16,16 @@ public class JobLineDaoImpl implements IJobLineDao {
     private JobLineMapper jobLineMapper;
 
     @Override
+    public void deleteLinesByVersionId(long jobVersionId) {
+        jobLineMapper.deleteLinesByVersionId(jobVersionId);
+    }
+
+    @Override
+    public void insertLines(List<JobLine> lines) {
+        jobLineMapper.insertBatchLines(lines);
+    }
+
+    @Override
     public List<JobLine> getLinesByVersionId(long jobVersionId) {
         return jobLineMapper.selectList(
                 Wrappers.lambdaQuery(new JobLine()).eq(JobLine::getVersionId, jobVersionId));

@@ -1,6 +1,8 @@
 package com.ljc.seatunnel.controller;
 
 import com.ljc.seatunnel.common.Result;
+import com.ljc.seatunnel.common.SeatunnelErrorEnum;
+import com.ljc.seatunnel.common.SeatunnelException;
 import com.ljc.seatunnel.datasource.plugins.api.DataSourcePluginInfo;
 import com.ljc.seatunnel.datasource.plugins.model.TableField;
 import com.ljc.seatunnel.domain.PageInfo;
@@ -21,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/seatunnel/api/v1/datasource")
@@ -160,6 +161,22 @@ public class SeatunnelDatasourceController {
             @RequestParam("datasourceName") String datasourceName,
             @RequestParam("databaseName") String databaseName) {
         return Result.success(datasourceService.queryTableNames(datasourceName, databaseName));
+    }
+
+    @GetMapping("/schema")
+    Result<List<TableField>> getTableFields(
+            @RequestParam("datasourceId") String datasourceId,
+            @RequestParam(value = "databaseName", required = false) String databaseName,
+            @RequestParam("tableName") String tableName) {
+        DatasourceDetailRes res = datasourceService.queryDatasourceDetailById(datasourceId);
+        if (StringUtils.isEmpty(databaseName)) {
+            throw new SeatunnelException(
+                    SeatunnelErrorEnum.INVALID_DATASOURCE, res.getDatasourceName());
+        }
+        List<TableField> tableFields =
+                datasourceService.queryTableSchema(
+                        res.getDatasourceName(), databaseName, tableName);
+        return Result.success(tableFields);
     }
 
     @PostMapping("/schemas")

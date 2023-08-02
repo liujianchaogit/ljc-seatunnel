@@ -35,6 +35,8 @@ public class ConnectorServiceImpl implements IConnectorService {
     private IDatasourceService datasourceService;
     @Autowired
     private IJobDefinitionService jobDefinitionService;
+    private static final List<String> SKIP_SINK = Collections.singletonList("Console");
+
     private static final List<String> SKIP_SOURCE = Collections.emptyList();
 
 
@@ -95,6 +97,36 @@ public class ConnectorServiceImpl implements IConnectorService {
         }
 
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<ConnectorInfo> listSinks(ConnectorStatus status) {
+        List<ConnectorInfo> connectorInfos;
+        if (status == ConnectorStatus.ALL) {
+            connectorInfos = connectorCache.getAllConnectors(PluginType.SINK);
+        } else if (status == ConnectorStatus.DOWNLOADED) {
+            connectorInfos = connectorCache.getDownLoadConnector(PluginType.SINK);
+        } else {
+            connectorInfos = connectorCache.getNotDownLoadConnector(PluginType.SINK);
+        }
+        return connectorInfos.stream()
+                .filter(c -> !SKIP_SINK.contains(c.getPluginIdentifier().getPluginName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DataSourceInstance> listSinkDataSourcesInstances(Long jobId, ConnectorStatus status) {
+        BusinessMode businessMode =
+                BusinessMode.valueOf(
+                        jobDefinitionService
+                                .getJobDefinitionByJobId(jobId)
+                                .getJobType()
+                                .toUpperCase());
+
+        return filterImplementDataSource(listSinks(status), businessMode, null, PluginType.SINK)
+                .stream()
+                .flatMap(dataSourceInfo -> getDataSourcesInstance(dataSourceInfo).stream())
+                .collect(Collectors.toList());
     }
 
     @Override

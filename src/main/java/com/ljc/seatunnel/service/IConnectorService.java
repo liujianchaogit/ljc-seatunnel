@@ -16,6 +16,10 @@ public interface IConnectorService {
 
     List<ConnectorInfo> listTransformsForJob(Long jobId);
 
+    List<ConnectorInfo> listSinks(ConnectorStatus status);
+
+    List<DataSourceInstance> listSinkDataSourcesInstances(Long jobId, ConnectorStatus status);
+
     FormStructure getTransformFormStructure(
             @NonNull String pluginType, @NonNull String connectorName);
 

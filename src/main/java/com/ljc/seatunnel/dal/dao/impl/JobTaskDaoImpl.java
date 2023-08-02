@@ -21,4 +21,26 @@ public class JobTaskDaoImpl implements IJobTaskDao {
                 Wrappers.lambdaQuery(new JobTask()).eq(JobTask::getVersionId, jobVersionId));
     }
 
+    @Override
+    public void insertTask(JobTask jobTask) {
+        if (jobTask != null) {
+            jobTaskMapper.insert(jobTask);
+        }
+    }
+
+    @Override
+    public void updateTask(JobTask jobTask) {
+        if (jobTask != null) {
+            jobTaskMapper.updateById(jobTask);
+        }
+    }
+
+    @Override
+    public JobTask getTask(long jobVersionId, String pluginId) {
+        return jobTaskMapper.selectOne(
+                Wrappers.lambdaQuery(new JobTask())
+                        .eq(JobTask::getVersionId, jobVersionId)
+                        .and(i -> i.eq(JobTask::getPluginId, pluginId)));
+    }
+
 }

@@ -22,6 +22,11 @@ public class JobDefinitionDaoImpl implements IJobDefinitionDao {
     }
 
     @Override
+    public void updateJob(JobDefinition jobDefinition) {
+        jobMapper.updateById(jobDefinition);
+    }
+
+    @Override
     public PageInfo<JobDefinition> getJob(String searchName, Integer pageNo, Integer pageSize, String jobMode) {
         IPage<JobDefinition> jobDefinitionIPage;
         if (StringUtils.isEmpty(jobMode)) {

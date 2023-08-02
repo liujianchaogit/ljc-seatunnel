@@ -29,6 +29,16 @@ public class VirtualTableDaoImpl implements IVirtualTableDao {
     }
 
     @Override
+    public boolean updateVirtualTable(VirtualTable virtualTable) {
+        return virtualTableMapper.updateById(virtualTable) > 0;
+    }
+
+    @Override
+    public VirtualTable selectVirtualTableById(Long id) {
+        return virtualTableMapper.selectById(id);
+    }
+
+    @Override
     public VirtualTable selectVirtualTableByTableName(String tableName) {
         return virtualTableMapper.selectOne(
                 new QueryWrapper<VirtualTable>().eq("virtual_table_name", tableName));

@@ -10,6 +10,10 @@ public interface IVirtualTableDao {
 
     boolean insertVirtualTable(VirtualTable virtualTable);
 
+    boolean updateVirtualTable(VirtualTable virtualTable);
+
+    VirtualTable selectVirtualTableById(Long id);
+
     VirtualTable selectVirtualTableByTableName(String tableName);
 
     boolean checkVirtualTableNameUnique(String virtualTableName, String databaseName, Long tableId);

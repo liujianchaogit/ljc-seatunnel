@@ -11,6 +11,10 @@ public interface IVirtualTableService {
     String createVirtualTable(Integer userId, VirtualTableReq req)
             throws CodeGenerateUtils.CodeGenerateException;
 
+    Boolean updateVirtualTable(Integer userId, String tableId, VirtualTableReq req);
+
+    VirtualTableDetailRes queryVirtualTable(String tableId);
+
     boolean containsVirtualTableByTableName(String tableName);
 
     VirtualTableDetailRes queryVirtualTableByTableName(String tableName);

@@ -16,6 +16,11 @@ public class JobVersionDaoImpl implements IJobVersionDao {
     private JobVersionMapper jobVersionMapper;
 
     @Override
+    public void updateVersion(JobVersion version) {
+        jobVersionMapper.updateById(version);
+    }
+
+    @Override
     public JobVersion getLatestVersion(long jobId) {
         Map<String, Object> queryMap = new HashMap<>();
         queryMap.put("job_id", jobId);

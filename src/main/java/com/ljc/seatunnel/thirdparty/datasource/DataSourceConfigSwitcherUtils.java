@@ -68,6 +68,8 @@ public class DataSourceConfigSwitcherUtils {
                 return ElasticSearchDataSourceConfigSwitcher.INSTANCE;
             case "KAFKA":
                 return KafkaDataSourceConfigSwitcher.getInstance();
+            case "PULSAR":
+                return PulsarDataSourceConfigSwitcher.getInstance();
             case "STARROCKS":
                 return StarRocksDataSourceConfigSwitcher.INSTANCE;
             case "MYSQL-CDC":

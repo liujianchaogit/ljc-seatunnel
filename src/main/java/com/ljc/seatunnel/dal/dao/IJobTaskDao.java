@@ -8,4 +8,10 @@ public interface IJobTaskDao {
 
     List<JobTask> getTasksByVersionId(long jobVersionId);
 
+    void insertTask(JobTask jobTask);
+
+    void updateTask(JobTask jobTask);
+
+    JobTask getTask(long jobVersionId, String pluginId);
+
 }

@@ -6,6 +6,7 @@ import com.ljc.seatunnel.domain.request.connector.SceneMode;
 import com.ljc.seatunnel.domain.response.connector.ConnectorInfo;
 import com.ljc.seatunnel.domain.response.connector.DataSourceInstance;
 import com.ljc.seatunnel.service.IConnectorService;
+import io.swagger.annotations.ApiParam;
 import org.apache.seatunnel.common.constants.PluginType;
 import org.apache.seatunnel.common.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,14 @@ public class ConnectorDataSourceController {
             @RequestParam ConnectorStatus status) {
         return Result.success(
                 connectorService.listSourceDataSourceInstances(jobId, sceneMode, status));
+    }
+
+    @GetMapping("/sinks")
+    public Result<List<DataSourceInstance>> listSink(
+            @ApiParam(value = "jobCode", required = true) @RequestParam Long jobId,
+            @ApiParam(value = "ConnectorStatus", required = true) @RequestParam
+            ConnectorStatus status) {
+        return Result.success(connectorService.listSinkDataSourcesInstances(jobId, status));
     }
 
     @GetMapping("/transforms")
