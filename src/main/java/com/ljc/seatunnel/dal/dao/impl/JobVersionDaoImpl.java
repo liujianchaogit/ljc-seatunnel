@@ -16,6 +16,11 @@ public class JobVersionDaoImpl implements IJobVersionDao {
     private JobVersionMapper jobVersionMapper;
 
     @Override
+    public void createVersion(JobVersion jobVersion) {
+        jobVersionMapper.insert(jobVersion);
+    }
+
+    @Override
     public void updateVersion(JobVersion version) {
         jobVersionMapper.updateById(version);
     }

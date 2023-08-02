@@ -1,10 +1,15 @@
 package com.ljc.seatunnel.service.impl;
 
+import com.ljc.seatunnel.common.CodeGenerateUtils;
+import com.ljc.seatunnel.common.EngineType;
 import com.ljc.seatunnel.common.SeatunnelErrorEnum;
 import com.ljc.seatunnel.common.SeatunnelException;
 import com.ljc.seatunnel.dal.dao.IJobDefinitionDao;
+import com.ljc.seatunnel.dal.dao.IJobVersionDao;
 import com.ljc.seatunnel.dal.entity.JobDefinition;
+import com.ljc.seatunnel.dal.entity.JobVersion;
 import com.ljc.seatunnel.domain.PageInfo;
+import com.ljc.seatunnel.domain.request.job.JobReq;
 import com.ljc.seatunnel.domain.response.job.JobDefinitionRes;
 import com.ljc.seatunnel.service.IJobDefinitionService;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +26,35 @@ public class JobDefinitionServiceImpl implements IJobDefinitionService {
 
     @Autowired
     private IJobDefinitionDao jobDefinitionDao;
+    @Autowired
+    private IJobVersionDao jobVersionDao;
+    private static final String DEFAULT_VERSION = "1.0";
+
+    @Override
+    public long createJob(int userId, JobReq jobReq) throws CodeGenerateUtils.CodeGenerateException {
+        long uuid = CodeGenerateUtils.getInstance().genCode();
+        jobDefinitionDao.add(
+                JobDefinition.builder()
+                        .id(uuid)
+                        .name(jobReq.getName())
+                        .description(jobReq.getDescription())
+                        .createUserId(userId)
+                        .updateUserId(userId)
+                        .jobType(jobReq.getJobType().name())
+                        .build());
+        jobVersionDao.createVersion(
+                JobVersion.builder()
+                        .jobId(uuid)
+                        .createUserId(userId)
+                        .updateUserId(userId)
+                        .name(DEFAULT_VERSION)
+                        .id(uuid)
+                        .engineName(EngineType.SeaTunnel.name())
+                        .jobMode(JobMode.BATCH.name())
+                        .engineVersion("2.3.0")
+                        .build());
+        return uuid;
+    }
 
     @Override
     public PageInfo<JobDefinitionRes> getJob(String searchName, Integer pageNo, Integer pageSize, String jobMode) {
@@ -67,5 +101,10 @@ public class JobDefinitionServiceImpl implements IJobDefinitionService {
     @Override
     public JobDefinition getJobDefinitionByJobId(long jobId) {
         return jobDefinitionDao.getJob(jobId);
+    }
+
+    @Override
+    public void deleteJob(long id) {
+        jobDefinitionDao.delete(id);
     }
 }

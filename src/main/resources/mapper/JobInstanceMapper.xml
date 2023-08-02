@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljc.seatunnel.dal.mapper.JobInstanceMapper">
+    <resultMap id="BaseResultMap" type="com.ljc.seatunnel.dal.entity.JobInstance">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="job_define_id" jdbcType="BIGINT" property="jobDefineId"/>
+        <result column="job_status" jdbcType="VARCHAR" property="jobStatus"/>
+        <result column="job_config" jdbcType="VARCHAR" property="jobConfig"/>
+        <result column="engine_name" jdbcType="VARCHAR" property="engineName"/>
+        <result column="engine_version" jdbcType="VARCHAR" property="engineVersion"/>
+        <result column="job_engine_id" jdbcType="VARCHAR" property="jobEngineId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , `job_define_id`, `job_status`, `job_config`, `engine_name`, `engine_version`, `job_engine_id`
+    </sql>
+
+    <select id="queryJobInstanceListPaging" resultType="com.ljc.seatunnel.domain.dto.job.SeaTunnelJobInstanceDto">
+        SELECT *
+        FROM t_st_job_instance
+        <where>
+            <if test="startTime != null">
+                AND create_time <![CDATA[ >=]]> #{startTime}
+            </if>
+            <if test="endTime == null">
+                AND (end_time is null or end_time <![CDATA[ <=]]> #{endTime})
+            </if>
+            <if test="endTime != null">
+                AND (end_time <![CDATA[ <=]]> #{endTime} or end_time is null)
+            </if>
+            <if test="jobDefineId != null">
+                AND job_define_id = #{jobDefineId}
+            </if>
+            <if test="jobMode != null">
+                AND job_type = #{jobMode}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+</mapper>

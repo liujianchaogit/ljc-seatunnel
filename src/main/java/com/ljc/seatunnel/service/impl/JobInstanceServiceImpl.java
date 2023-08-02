@@ -19,8 +19,10 @@ import com.ljc.seatunnel.domain.request.job.TableSchemaReq;
 import com.ljc.seatunnel.domain.request.job.transform.Transform;
 import com.ljc.seatunnel.domain.request.job.transform.TransformOptions;
 import com.ljc.seatunnel.domain.response.datasource.VirtualTableDetailRes;
+import com.ljc.seatunnel.domain.response.metrics.JobPipelineSummaryMetricsRes;
 import com.ljc.seatunnel.service.IDatasourceService;
 import com.ljc.seatunnel.service.IJobInstanceService;
+import com.ljc.seatunnel.service.IJobMetricsService;
 import com.ljc.seatunnel.service.IVirtualTableService;
 import com.ljc.seatunnel.thirdparty.datasource.DataSourceConfigSwitcherUtils;
 import com.ljc.seatunnel.thirdparty.transform.TransformConfigSwitcherUtils;
@@ -34,6 +36,7 @@ import org.apache.seatunnel.api.configuration.util.OptionRule;
 import org.apache.seatunnel.api.env.ParsingMode;
 import org.apache.seatunnel.common.constants.PluginType;
 import org.apache.seatunnel.common.utils.ExceptionUtils;
+import org.apache.seatunnel.engine.core.job.JobStatus;
 import org.apache.seatunnel.shade.com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.seatunnel.shade.com.typesafe.config.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +71,8 @@ public class JobInstanceServiceImpl implements IJobInstanceService {
     private IJobTaskDao jobTaskDao;
     @Autowired
     private IVirtualTableService virtualTableService;
+    @Autowired
+    private IJobMetricsService jobMetricsService;
     @Autowired
     private ConnectorDataSourceMapperConfig dataSourceMapperConfig;
 
@@ -277,33 +282,33 @@ public class JobInstanceServiceImpl implements IJobInstanceService {
 
     @Override
     public void complete(@NonNull Integer userId, @NonNull Long jobInstanceId, @NonNull String jobEngineId) {
-//        JobInstance jobInstance = jobInstanceDao.getJobInstanceMapper().selectById(jobInstanceId);
-//        jobMetricsService.syncJobDataToDb(jobInstance, userId, jobEngineId);
-//
-//        List<JobPipelineSummaryMetricsRes> status =
-//                jobMetricsService.getJobPipelineSummaryMetrics(userId, jobInstanceId);
-//
-//        String jobStatus;
-//        Set<String> statusList =
-//                status.stream()
-//                        .map(JobPipelineSummaryMetricsRes::getStatus)
-//                        .map(String::toUpperCase)
-//                        .collect(Collectors.toSet());
-//        if (statusList.size() == 1 && statusList.contains("FINISHED")) {
-//            jobStatus = JobStatus.FINISHED.name();
-//        } else if (statusList.contains("FAILED")) {
-//            jobStatus = JobStatus.FAILED.name();
-//        } else if (statusList.contains("CANCELED")) {
-//            jobStatus = JobStatus.CANCELED.name();
-//        } else if (statusList.contains("CANCELLING")) {
-//            jobStatus = JobStatus.CANCELLING.name();
-//        } else {
-//            jobStatus = JobStatus.RUNNING.name();
-//        }
-//        jobInstance.setJobStatus(jobStatus);
-//        jobInstance.setJobEngineId(jobEngineId);
-//        jobInstance.setUpdateUserId(userId);
-//        jobInstanceDao.update(jobInstance);
+        JobInstance jobInstance = jobInstanceDao.getJobInstanceMapper().selectById(jobInstanceId);
+        jobMetricsService.syncJobDataToDb(jobInstance, userId, jobEngineId);
+
+        List<JobPipelineSummaryMetricsRes> status =
+                jobMetricsService.getJobPipelineSummaryMetrics(userId, jobInstanceId);
+
+        String jobStatus;
+        Set<String> statusList =
+                status.stream()
+                        .map(JobPipelineSummaryMetricsRes::getStatus)
+                        .map(String::toUpperCase)
+                        .collect(Collectors.toSet());
+        if (statusList.size() == 1 && statusList.contains("FINISHED")) {
+            jobStatus = JobStatus.FINISHED.name();
+        } else if (statusList.contains("FAILED")) {
+            jobStatus = JobStatus.FAILED.name();
+        } else if (statusList.contains("CANCELED")) {
+            jobStatus = JobStatus.CANCELED.name();
+        } else if (statusList.contains("CANCELLING")) {
+            jobStatus = JobStatus.CANCELLING.name();
+        } else {
+            jobStatus = JobStatus.RUNNING.name();
+        }
+        jobInstance.setJobStatus(jobStatus);
+        jobInstance.setJobEngineId(jobEngineId);
+        jobInstance.setUpdateUserId(userId);
+        jobInstanceDao.update(jobInstance);
     }
 
     private Config buildTransformConfig(
