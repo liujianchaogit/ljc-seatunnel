@@ -58,6 +58,11 @@
             <artifactId>seatunnel-engine-client</artifactId>
             <version>${seatunnel-framework.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.seatunnel</groupId>
+            <artifactId>seatunnel-transforms-v2</artifactId>
+            <version>${seatunnel-framework.version}</version>
+        </dependency>
         <!-- seatunnel end -->
         <dependency>
             <groupId>com.google.auto.service</groupId>
